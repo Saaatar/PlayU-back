@@ -1,0 +1,11 @@
+services:
+  playu-back:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    container_name: playu-back
+    restart: unless-stopped
+    ports:
+      - "3000:3000"
+    env_file:
+      - .env
