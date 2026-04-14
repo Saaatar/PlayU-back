@@ -1,5 +1,5 @@
 {
-  "name": "PlayU-Back",
+  "name": "playu-back",
   "version": "0.1.0",
   "description": "",
   "main": "index.js",
@@ -7,7 +7,6 @@
     "test": "echo \"Error: no test specified\" && exit 1",
     "dev": "tsx watch src/app.ts",
     "build": "tsc",
-    "check": "tsc",
     "format": "prettier --write \"src/**/*.{ts,js}\" \"*.json\" \".github/**/*.yml\"",
     "format:check": "prettier --check \"src/**/*.{ts,js}\" \"*.json\" \".github/**/*.yml\""
   },
