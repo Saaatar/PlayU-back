@@ -1,6 +1,7 @@
 import { Server } from "socket.io";
 import { RoomService } from "../core/services/room.service.js";
 import type { GameSocket } from "../core/types/game-socket.model.js";
+import { PlayuEvents } from "../core/types/playu.states.machine.js";
 
 export class RoomSocketHandler {
   constructor(
@@ -14,6 +15,17 @@ export class RoomSocketHandler {
   private setupEvents(): void {
     this.socket.on("room:join", this.handleJoin);
     this.socket.on("disconnect", this.handleDisconnect);
+    this.socket.on("game:start", () => {
+      this.dispatchToRoom(PlayuEvents.START_GAME);
+    });
+    this.socket.on("game:end_mini", () => {
+      this.dispatchToRoom(PlayuEvents.END_MINIGAME);
+    });
+    this.socket.on("game:next", () => {
+      if (this.socket.roomCode) {
+        this.roomService.advanceGame(this.socket.roomCode);
+      }
+    });
   }
 
   private handleJoin = (data: { code: string; username: string }): void => {
@@ -47,4 +59,10 @@ export class RoomSocketHandler {
     }
     console.log(`User left: ${this.socket.id}`);
   };
+
+  private dispatchToRoom(event: PlayuEvents) {
+    if (this.socket.roomCode) {
+      this.roomService.triggerEvent(this.socket.roomCode, event);
+    }
+  }
 }

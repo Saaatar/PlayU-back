@@ -7,6 +7,6 @@ export const roomRouter = (RoomService: RoomService) => {
   const roomController = new RoomController(RoomService);
 
   router.post("/", roomController.create);
-
+  router.post("/catalog", roomController.saveCatalog);
   return router;
 };
