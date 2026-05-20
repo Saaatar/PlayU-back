@@ -2,6 +2,7 @@ import { Server } from "socket.io";
 import { RoomService } from "../core/services/room.service.js";
 import type { GameSocket } from "../core/types/game-socket.model.js";
 import { PlayuEvents } from "../core/types/playu.states.machine.js";
+import { SocketEvents } from "./types/socket.events.models.js";
 
 export class RoomSocketHandler {
   constructor(
@@ -13,15 +14,15 @@ export class RoomSocketHandler {
   }
 
   private setupEvents(): void {
-    this.socket.on("room:join", this.handleJoin);
-    this.socket.on("disconnect", this.handleDisconnect);
-    this.socket.on("game:start", () => {
+    this.socket.on(SocketEvents.ROOM_JOIN, this.handleJoin);
+    this.socket.on(SocketEvents.DISCONNECT, this.handleDisconnect);
+    this.socket.on(SocketEvents.GAME_START, () => {
       this.dispatchToRoom(PlayuEvents.START_GAME);
     });
-    this.socket.on("game:end_mini", () => {
+    this.socket.on(SocketEvents.GAME_END_MINI, () => {
       this.dispatchToRoom(PlayuEvents.END_MINIGAME);
     });
-    this.socket.on("game:next", () => {
+    this.socket.on(SocketEvents.GAME_NEXT, () => {
       if (this.socket.roomCode) {
         this.roomService.advanceGame(this.socket.roomCode);
       }
@@ -35,7 +36,7 @@ export class RoomSocketHandler {
 
       this.socket.roomCode = data.code;
 
-      this.io.to(data.code).emit("room:update", {
+      this.io.to(data.code).emit(SocketEvents.ROOM_UPDATE, {
         code: data.code,
         players: room.players,
       });
@@ -51,7 +52,7 @@ export class RoomSocketHandler {
       const room = this.roomService.leave(code, this.socket.id);
 
       if (room) {
-        this.io.to(code).emit("room:update", {
+        this.io.to(code).emit(SocketEvents.ROOM_UPDATE, {
           code: room.code,
           players: room.players,
         });
